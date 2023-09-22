@@ -20,6 +20,7 @@ TEST_CASE("Elements can be inserted at the end")
     CircularBuffer<int> buffer(SIZE);
     for (int i = 1; i <= SIZE; i++) {
         buffer.insert(i - 1, i);
+        REQUIRE(buffer.getSize() == i);
     }
     requireEqual(buffer, {1, 2, 3, 4, 5});
 }
@@ -29,6 +30,7 @@ TEST_CASE("Elements can be inserted at the beginning")
     CircularBuffer<int> buffer(SIZE);
     for (int i = SIZE; i >= 1; i--) {
         buffer.insert(0, i);
+        REQUIRE(buffer.getSize() == SIZE - i + 1);
     }
     requireEqual(buffer, {1, 2, 3, 4, 5});
 }
@@ -115,4 +117,36 @@ TEST_CASE("Removing an out-of-bounds index throws an exception")
 
     REQUIRE_THROWS(buffer.remove(-1));
     REQUIRE_THROWS(buffer.remove(SIZE));
+}
+
+TEST_CASE("Elements can be accessed by index")
+{
+    CircularBuffer<int> buffer(SIZE);
+
+    for (int i = 1; i <= SIZE; i++) {
+        buffer.insert(i - 1, i);
+    }
+    requireEqual(buffer, {1, 2, 3, 4, 5});
+
+    REQUIRE(buffer[0] == 1);
+    REQUIRE(buffer[SIZE-1] == SIZE);
+    REQUIRE_THROWS(buffer[-1]);
+    REQUIRE_THROWS(buffer[SIZE]);
+}
+
+TEST_CASE("Elements can be set by index")
+{
+    CircularBuffer<int> buffer(SIZE);
+
+    for (int i = 1; i <= SIZE; i++) {
+        buffer.insert(i - 1, i);
+    }
+    requireEqual(buffer, {1, 2, 3, 4, 5});
+
+    buffer[0] = 99;
+    buffer[SIZE-1] = 101;
+    REQUIRE(buffer[0] == 99);
+    REQUIRE(buffer[SIZE-1] == 101);
+    REQUIRE_THROWS(buffer[-1] = 99);
+    REQUIRE_THROWS(buffer[SIZE] = 99);
 }
